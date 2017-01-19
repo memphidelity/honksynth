@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="style.css">
+<script type="text/javascript">
+
+
+var AudioContext = window.AudioContext // Default
+    || window.webkitAudioContext // Safari and old versions of Chrome
+    || false; 
+
+if (AudioContext) {
+    // Do whatever you want using the Web Audio API
+    var honk = new AudioContext;
+    // ...
+} else {
+    // Web Audio API is not supported
+    // Alert the user
+    alert("Sorry, but the Web Audio API is not supported by your browser. Please, consider upgrading to the latest version or downloading Google Chrome or Mozilla Firefox");
+}
+
+
+	
+	// var honk = new AudioContext();
+	var howl = honk.createOscillator();
+	var LFO = honk.createOscillator();
+	var bang = honk.createGain();
+	var echo = honk.createDelay();
+	var squeal = honk.createBiquadFilter();
+	var ouch =honk.createGain();
+
+	howl.connect(bang);
+	LFO.connect(bang.gain);
+	bang.connect(squeal);
+	squeal.connect(echo);
+	echo.connect(ouch);
+	howl.frequency.value = 300; // value in hertz
+
+	howl.start();
+
+	LFO.type = 'square';
+	LFO.frequency.value = 10;
+	LFO.start();
+
+	ouch.gain.value = 0.1;
+	bang.gain.value = 0.1;
+
+	function disconnect() {
+		ouch.disconnect(honk.destination);
+	}
+
+	function connect() {
+		ouch.connect(honk.destination);
+	}
+
+	function LFOconnect() {
+		LFO.connect(bang.gain);
+	}
+
+		function LFODisconnect() {
+		LFO.disconnect(bang.gain);
+	}
+
+    	function octaveUp() {
+		howl.frequency.value = howl.frequency.value * 2;
+	}
+
+    	function octaveDown() {
+		howl.frequency.value = howl.frequency.value / 2;
+	}	
+
+</script>
+
+</head>
+<body>
+	
+	<article>
+<section>
+	<header><h4>Oscillator 1</h4></header>
+
+	OSC1 Frequency: <input id="frequency" type="range" min="0" max="1000" step="1" value="440" onchange="howl.frequency.value = this.value;"><br><br>
+	<input type="button" value="tri"onclick="howl.type = 'triangle';">
+	<input type="button" value="saw"onclick="howl.type = 'sawtooth';">
+	<input type="button" value="sqr"onclick="howl.type = 'square';">
+	<br><br>
+
+	<input onclick="octaveDown()" type="button" class="power" value="8va -" id="toggle">
+	<input onclick="octaveUp()" type="button" class="power" value="8va +" id="toggle">
+
+</section>
+
+<section>
+	<header><h4>LFO</h4></header>
+	<input onclick="LFOconnect()" type="button" class="power" value="on" id="toggle">
+	<input onclick="LFODisconnect()" type="button" class="power" value="off" id="toggle">
+	<br>
+	LFO Frequency: <input id="LFOfrequency" type="range" min="0" max="50" step="1" value="20" onchange="LFO.frequency.value = this.value;"><br><br>
+	<input type="button" value="tri" onclick="LFO.type = 'triangle';">
+	<input type="button" value="saw" onclick="LFO.type = 'sawtooth';">
+	<input type="button" value="sqr" onclick="LFO.type = 'square';">
+	
+</section>
+
+<section>
+	<header><h4>Filter</h4></header>
+	
+ 	Filter Frequency: <input id="filterFrequency" type="range" min="0" max="2000" step="1" value="600" onchange="squeal.frequency.value = this.value;"><br><br>
+	
+</section>
+
+<!-- <section>
+	<header><h4>Delay</h4></header>
+	
+ 	Delay: <input id="Delay" type="range" min="0" max="2000" step="1" value="600" onchange="echo.delayTime.value = this.value;"><br><br>
+	
+</section>
+ -->
+
+ </article>
+
+ <article>
+	<div class="play" onclick="connect()" type="button" value="on" id="toggle">ON</div>
+	<div class="play" onclick="disconnect()" type="button"  value="off" id="toggle">OFF</div>
+	<div class="play" onmouseenter="connect()" onmouseleave="disconnect()">TRIGGER</div>
+ </article>
+</body>
+</html>
